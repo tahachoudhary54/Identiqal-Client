@@ -287,10 +287,10 @@ export default function DashboardOverviewPage() {
                     </div>
                     
                     <Link href={`/dashboard/cards/${card._id}/edit`}>
-                      <Button className="bg-white border border-[rgba(90,48,69,0.08)] hover:bg-[#5A3045] hover:text-white hover:border-[#5A3045] text-xs font-bold px-3 py-1.5 rounded-lg transition-all flex items-center space-x-1">
+                      <span className="inline-flex items-center justify-center font-bold text-xs px-3 py-1.5 rounded-lg border border-[rgba(90,48,69,0.08)] bg-white text-[#5A3045] hover:bg-[#5A3045] hover:text-white hover:border-[#5A3045] transition-all duration-200 shadow-xs cursor-pointer space-x-1">
                         <span>Edit</span>
                         <ArrowUpRight size={10} />
-                      </Button>
+                      </span>
                     </Link>
                   </div>
                 </div>

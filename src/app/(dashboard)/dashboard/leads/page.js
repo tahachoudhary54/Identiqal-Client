@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useCards } from '@/hooks/useCards.js';
 import { useLeads } from '@/hooks/useLeads.js';
 import { useAuthStore } from '@/store/authStore.js';
-import { Button } from '@/components/ui/Button.jsx';
 import { Modal } from '@/components/ui/Modal.jsx';
 import {
   Inbox,
@@ -15,6 +14,9 @@ import {
   Layers,
   ArrowUpRight,
   Sparkles,
+  Mail,
+  Phone,
+  ExternalLink,
 } from 'lucide-react';
 
 export default function LeadsDashboardPage() {
@@ -23,10 +25,8 @@ export default function LeadsDashboardPage() {
   const [selectedCardId, setSelectedCardId] = useState('');
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
 
-  // Hook to fetch leads for active card
   const { leads, isLoading: loadingLeads, refetch } = useLeads(selectedCardId);
 
-  // Set default selected card
   useEffect(() => {
     if (cards.length > 0 && !selectedCardId) {
       setSelectedCardId(cards[0]._id);
@@ -34,18 +34,14 @@ export default function LeadsDashboardPage() {
   }, [cards, selectedCardId]);
 
   const handleDownloadCsv = () => {
-    // Gate CSV download by subscriptionTier (Pro/Business only)
     if (user?.subscriptionTier === 'free') {
       setUpgradeModalOpen(true);
       return;
     }
-
     if (leads.length === 0) {
       alert('No leads to download');
       return;
     }
-
-    // Generate CSV
     const headers = ['Name', 'Email', 'Phone', 'Message', 'Source', 'Date'];
     const rows = leads.map((l) => [
       l.name,
@@ -55,11 +51,9 @@ export default function LeadsDashboardPage() {
       l.source,
       new Date(l.createdAt).toLocaleDateString(),
     ]);
-
     const csvContent =
       'data:text/csv;charset=utf-8,' +
       [headers.join(','), ...rows.map((r) => r.map((cell) => `"${cell}"`).join(','))].join('\n');
-
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
@@ -70,53 +64,58 @@ export default function LeadsDashboardPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-5 gap-4">
+    <div className="space-y-8 max-w-5xl">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-[#E9E2DC]">
         <div>
-          <h1 className="text-xl font-extrabold text-slate-900">Leads Hub</h1>
-          <p className="text-xs text-slate-500">View contact inquiries and reverse-save capture data.</p>
+          <span className="text-[10px] font-black uppercase tracking-widest text-[#C89B5B]">Capture Center</span>
+          <h1 className="text-2xl font-black text-[#1F1F1F] mt-1">Leads Hub</h1>
+          <p className="text-xs text-[#8A7A6A] mt-1">View contact inquiries and reverse-save capture data.</p>
         </div>
 
         {cards.length > 0 && (
-          <Button
+          <button
             onClick={handleDownloadCsv}
-            variant={user?.subscriptionTier === 'free' ? 'outline' : 'primary'}
-            className="space-x-1.5 py-2 text-xs"
+            className="inline-flex items-center space-x-2 bg-[#5A3342] hover:bg-[#6A3B4B] text-white font-semibold text-xs px-5 py-2.5 rounded-xl transition-all shadow-sm shadow-[#5A3342]/20 cursor-pointer"
           >
-            <Download size={14} />
-            <span>Download CSV Log</span>
+            <Download size={13} />
+            <span>Download CSV</span>
             {user?.subscriptionTier === 'free' && (
-              <span className="text-[8px] bg-indigo-50 border border-indigo-200 text-indigo-700 px-1 rounded-md uppercase font-bold ml-1">
-                Pro
-              </span>
+              <span className="text-[8px] bg-[#C89B5B] text-white px-1.5 py-0.5 rounded-md uppercase font-black ml-1">Pro</span>
             )}
-          </Button>
+          </button>
         )}
       </div>
 
       {loadingCards ? (
-        <div className="h-20 bg-slate-100 rounded-2xl animate-pulse" />
+        <div className="h-20 bg-[#F5EFE9] rounded-2xl animate-pulse" />
       ) : cards.length === 0 ? (
-        <div className="text-center py-20 bg-white border border-slate-200 rounded-3xl space-y-4 shadow-sm">
-          <Inbox size={48} className="mx-auto text-slate-400" />
+        <div className="text-center py-24 bg-white border border-[#E9E2DC] rounded-3xl space-y-5 shadow-sm shadow-[#5A3342]/3">
+          <div className="w-16 h-16 bg-[#5A3342]/5 rounded-2xl flex items-center justify-center mx-auto">
+            <Inbox size={28} className="text-[#5A3342]" />
+          </div>
           <div className="space-y-1">
-            <h3 className="text-sm font-bold text-slate-800">No captured leads</h3>
-            <p className="text-xs text-slate-500 max-w-xs mx-auto">Create and publish a card with an inquiry form to capture visitor leads.</p>
+            <h3 className="text-sm font-bold text-[#1F1F1F]">No captured leads yet</h3>
+            <p className="text-xs text-[#8A7A6A] max-w-xs mx-auto">Create and publish a card with an inquiry form to start capturing visitor leads.</p>
           </div>
           <Link href="/dashboard/cards" className="inline-block">
-            <Button size="sm">Go to My Cards</Button>
+            <span className="inline-flex items-center bg-[#5A3342] hover:bg-[#6A3B4B] text-white font-semibold text-xs px-5 py-2.5 rounded-xl transition-all cursor-pointer">
+              Go to My Cards
+            </span>
           </Link>
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Card filter dropdown */}
-          <div className="flex items-center space-x-3 bg-slate-50 border border-slate-200 p-4 rounded-xl shadow-sm">
-            <Layers size={16} className="text-slate-400" />
-            <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">Select Digital Card:</span>
+          {/* Card filter */}
+          <div className="flex items-center space-x-3 bg-white border border-[#E9E2DC] p-4 rounded-2xl shadow-sm shadow-[#5A3342]/3">
+            <div className="w-8 h-8 rounded-xl bg-[#5A3342]/5 flex items-center justify-center">
+              <Layers size={15} className="text-[#5A3342]" />
+            </div>
+            <span className="text-[10px] text-[#8A7A6A] font-black uppercase tracking-widest">Active Card:</span>
             <select
               value={selectedCardId}
               onChange={(e) => setSelectedCardId(e.target.value)}
-              className="bg-white border border-slate-200 rounded-lg text-xs p-2 text-slate-700 focus:outline-none"
+              className="bg-[#FAF8F6] border border-[#E9E2DC] rounded-xl text-xs p-2 text-[#1F1F1F] focus:outline-none focus:border-[#5A3342]/40 transition-colors font-semibold flex-1"
             >
               {cards.map((c) => (
                 <option key={c._id} value={c._id}>
@@ -126,40 +125,58 @@ export default function LeadsDashboardPage() {
             </select>
           </div>
 
-          {/* Leads table/list */}
+          {/* Leads List */}
           {loadingLeads ? (
             <div className="space-y-3">
-              <div className="h-16 bg-slate-50 rounded-xl animate-pulse" />
-              <div className="h-16 bg-slate-50 rounded-xl animate-pulse" />
+              <div className="h-20 bg-[#F5EFE9] rounded-2xl animate-pulse" />
+              <div className="h-20 bg-[#F5EFE9] rounded-2xl animate-pulse" />
             </div>
           ) : leads.length === 0 ? (
-            <div className="text-center py-16 bg-slate-50 border border-slate-200 rounded-2xl text-slate-500 text-xs">
-              No lead captures registered for this card yet.
+            <div className="text-center py-16 bg-[#FAF8F6] border border-[#E9E2DC] rounded-2xl">
+              <Inbox size={32} className="mx-auto text-[#C89B5B]/50 mb-3" />
+              <p className="text-xs text-[#8A7A6A] font-semibold">No lead captures registered for this card yet.</p>
             </div>
           ) : (
             <div className="space-y-4">
               {leads.map((lead) => (
                 <div
                   key={lead._id}
-                  className="p-5 bg-white border border-slate-200 hover:border-slate-350 rounded-2xl space-y-4 transition-all duration-200 shadow-sm"
+                  className="p-5 bg-white border border-[#E9E2DC] hover:border-[#5A3342]/20 rounded-2xl space-y-4 transition-all duration-200 shadow-sm shadow-[#5A3342]/3 hover:shadow-md hover:shadow-[#5A3342]/5"
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                      <h4 className="text-sm font-bold text-slate-900">{lead.name}</h4>
-                      <p className="text-xs text-slate-550">{lead.email} | {lead.phone || 'No phone'}</p>
-                    </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center space-x-3">
-                      <span className="text-[9px] bg-slate-50 border border-slate-200 text-slate-600 px-2 py-0.5 rounded-full capitalize">
-                        source: {lead.source}
+                      {/* Avatar */}
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#5A3342] to-[#7A4A5E] flex items-center justify-center text-white font-black text-sm shrink-0">
+                        {lead.name?.charAt(0)?.toUpperCase() || '?'}
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-[#1F1F1F]">{lead.name}</h4>
+                        <div className="flex items-center space-x-3 mt-0.5">
+                          <span className="text-[10px] text-[#8A7A6A] flex items-center space-x-1">
+                            <Mail size={9} />
+                            <span>{lead.email}</span>
+                          </span>
+                          {lead.phone && (
+                            <span className="text-[10px] text-[#8A7A6A] flex items-center space-x-1">
+                              <Phone size={9} />
+                              <span>{lead.phone}</span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2 shrink-0">
+                      <span className="text-[9px] bg-[#5A3342]/5 border border-[#5A3342]/10 text-[#5A3342] px-2.5 py-1 rounded-full capitalize font-bold">
+                        via {lead.source}
                       </span>
-                      <span className="text-[10px] text-slate-550 flex items-center space-x-1">
-                        <Calendar size={12} />
+                      <span className="text-[9px] text-[#8A7A6A] flex items-center space-x-1 bg-[#FAF8F6] border border-[#E9E2DC] px-2.5 py-1 rounded-full">
+                        <Calendar size={9} />
                         <span>{new Date(lead.createdAt).toLocaleDateString()}</span>
                       </span>
                     </div>
                   </div>
                   {lead.message && (
-                    <div className="p-3.5 bg-slate-50 border border-slate-150 rounded-xl text-xs text-slate-700 leading-relaxed font-mono whitespace-pre-wrap">
+                    <div className="p-3.5 bg-[#FAF8F6] border border-[#E9E2DC] rounded-xl text-xs text-[#4A3A2E] leading-relaxed whitespace-pre-wrap font-medium">
                       {lead.message}
                     </div>
                   )}
@@ -170,25 +187,31 @@ export default function LeadsDashboardPage() {
         </div>
       )}
 
-      {/* Upgrade Plan Modal */}
+      {/* Upgrade Modal */}
       <Modal isOpen={upgradeModalOpen} onClose={() => setUpgradeModalOpen(false)} title="Upgrade to Pro Plan">
         <div className="flex flex-col items-center space-y-4 py-4 text-center">
-          <div className="w-12 h-12 bg-indigo-500/10 rounded-full flex items-center justify-center text-indigo-650">
+          <div className="w-14 h-14 bg-gradient-to-br from-[#5A3342] to-[#7A4A5E] rounded-2xl flex items-center justify-center text-[#C89B5B]">
             <Sparkles size={24} />
           </div>
-          <h3 className="font-bold text-slate-900">Unlock CSV Export Logs</h3>
-          <p className="text-xs text-slate-600 max-w-xs leading-relaxed">
-            CSV logs and excel spreadsheet downloads are exclusive to Pro and Business plan users. Upgrade your tier to activate immediately.
+          <h3 className="font-black text-[#1F1F1F] text-base">Unlock CSV Export Logs</h3>
+          <p className="text-xs text-[#8A7A6A] max-w-xs leading-relaxed">
+            CSV logs and export downloads are exclusive to Pro and Business plan members. Upgrade your tier to activate immediately.
           </p>
-          <div className="flex space-x-3 pt-4 border-t border-slate-150 w-full justify-end">
-            <Button variant="secondary" onClick={() => setUpgradeModalOpen(false)}>
+          <div className="flex space-x-3 pt-4 border-t border-[#E9E2DC] w-full justify-end">
+            <button
+              onClick={() => setUpgradeModalOpen(false)}
+              className="text-xs font-semibold text-[#8A7A6A] px-4 py-2 rounded-xl border border-[#E9E2DC] hover:bg-[#FAF8F6] transition-all cursor-pointer"
+            >
               Cancel
-            </Button>
+            </button>
             <Link href="/dashboard/billing">
-              <Button onClick={() => setUpgradeModalOpen(false)} className="space-x-1.5">
-                <span>View Billing Settings</span>
-                <ArrowUpRight size={14} />
-              </Button>
+              <span
+                onClick={() => setUpgradeModalOpen(false)}
+                className="inline-flex items-center space-x-1.5 bg-[#5A3342] hover:bg-[#6A3B4B] text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer"
+              >
+                <span>View Billing</span>
+                <ArrowUpRight size={12} />
+              </span>
             </Link>
           </div>
         </div>

@@ -8,7 +8,6 @@ import { orgService } from '@/services/orgService.js';
 import { cardService } from '@/services/cardService.js';
 import { useAuthStore } from '@/store/authStore.js';
 import { Input } from '@/components/ui/Input.jsx';
-import { Button } from '@/components/ui/Button.jsx';
 import {
   Users,
   Plus,
@@ -17,6 +16,9 @@ import {
   ShieldAlert,
   Sparkles,
   Lock,
+  Building2,
+  Crown,
+  ChevronRight,
 } from 'lucide-react';
 
 export default function TeamWorkspacePage() {
@@ -28,24 +30,18 @@ export default function TeamWorkspacePage() {
   const [isCreatingOrg, setIsCreatingOrg] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
 
-  // Hook for Org creation form
   const {
     register: registerOrg,
     handleSubmit: handleSubmitOrg,
     formState: { errors: orgErrors },
-  } = useForm({
-    resolver: yupResolver(createOrgSchema),
-  });
+  } = useForm({ resolver: yupResolver(createOrgSchema) });
 
-  // Hook for Member invitation form
   const {
     register: registerInvite,
     handleSubmit: handleSubmitInvite,
     reset: resetInvite,
     formState: { errors: inviteErrors },
-  } = useForm({
-    resolver: yupResolver(inviteMemberSchema),
-  });
+  } = useForm({ resolver: yupResolver(inviteMemberSchema) });
 
   const fetchOrgDetails = async () => {
     if (!user.organizationId) {
@@ -54,12 +50,7 @@ export default function TeamWorkspacePage() {
     }
     setLoading(true);
     try {
-      // In production, we'd have a specific GET endpoint. Here we'll fetch themes/cards or simulate org state:
-      // Since backend Org details are updated on user, we can fetch org from custom mock endpoints or cards:
-      // For MVP, we can simulate loading org metadata or query org info.
-      // Let's call a query or retrieve from state:
-      const response = await cardService.getTheme(); // checks if org themed locks exist
-      // Setup a simulated Org payload since user organizationId is set
+      const response = await cardService.getTheme();
       setOrg({
         _id: user.organizationId,
         name: 'Workspace Organization',
@@ -86,11 +77,7 @@ export default function TeamWorkspacePage() {
     try {
       const response = await orgService.createOrg(data.name, data.logoUrl);
       if (response.success) {
-        // Update user state organizationId and role
-        updateUser({
-          organizationId: response.data._id,
-          role: 'owner',
-        });
+        updateUser({ organizationId: response.data._id, role: 'owner' });
         setOrg(response.data);
       }
     } catch (err) {
@@ -109,14 +96,10 @@ export default function TeamWorkspacePage() {
       if (response.success) {
         setSuccessMsg(`Invitation successfully sent to ${data.email}!`);
         resetInvite();
-        // Update local members list
         setOrg((prev) => ({
           ...prev,
           seatsUsed: prev.seatsUsed + 1,
-          members: [
-            ...prev.members,
-            { email: data.email, role: data.role, status: 'invited' },
-          ],
+          members: [...prev.members, { email: data.email, role: data.role, status: 'invited' }],
         }));
       }
     } catch (err) {
@@ -129,88 +112,111 @@ export default function TeamWorkspacePage() {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-indigo-500" />
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#5A3342] border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 max-w-5xl">
-      <div className="border-b border-slate-200 pb-5">
-        <h1 className="text-xl font-extrabold text-slate-900">Team Workspace</h1>
-        <p className="text-xs text-slate-500">Configure shared templates and invite organization members.</p>
+    <div className="space-y-8 max-w-5xl">
+      {/* Header */}
+      <div className="pb-6 border-b border-[#E9E2DC]">
+        <span className="text-[10px] font-black uppercase tracking-widest text-[#C89B5B]">Collaboration</span>
+        <h1 className="text-2xl font-black text-[#1F1F1F] mt-1">Team Workspace</h1>
+        <p className="text-xs text-[#8A7A6A] mt-1">Configure shared templates and invite organization members.</p>
       </div>
 
+      {/* Alerts */}
       {errorMsg && (
-        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs flex items-center space-x-2">
-          <ShieldAlert size={16} className="shrink-0 animate-pulse" />
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-xs flex items-center space-x-2">
+          <ShieldAlert size={15} className="shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
-
       {successMsg && (
-        <div className="p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl text-xs flex items-center space-x-2">
-          <UserCheck size={16} className="shrink-0 animate-pulse" />
+        <div className="p-4 bg-green-50 border border-green-200 text-green-700 rounded-2xl text-xs flex items-center space-x-2">
+          <UserCheck size={15} className="shrink-0 animate-pulse" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {!org ? (
         /* Create Org Callout */
-        <div className="bg-white border border-slate-200 rounded-3xl p-8 space-y-6 max-w-xl mx-auto text-center relative overflow-hidden shadow-sm">
-          <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl" />
-          <Users size={48} className="mx-auto text-indigo-600 animate-pulse" />
-          <div className="space-y-2">
-            <h2 className="text-base font-bold text-slate-900">Create a Team Workspace</h2>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Unlock centralized branding locks, aggregated team reports, and collaborative seat allocations. Rebrand all team business cards instantly.
-            </p>
-          </div>
+        <div className="bg-white border border-[#E9E2DC] rounded-3xl p-10 space-y-6 max-w-xl mx-auto text-center relative overflow-hidden shadow-sm shadow-[#5A3342]/3">
+          <div className="absolute top-0 right-0 w-56 h-56 bg-[#C89B5B]/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative z-10 space-y-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#5A3342] to-[#7A4A5E] rounded-2xl flex items-center justify-center mx-auto text-[#C89B5B] shadow-md shadow-[#5A3342]/20">
+              <Building2 size={28} />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-lg font-black text-[#1F1F1F]">Create a Team Workspace</h2>
+              <p className="text-xs text-[#8A7A6A] leading-relaxed max-w-sm mx-auto">
+                Unlock centralized branding locks, aggregated team reports, and collaborative seat allocations.
+              </p>
+            </div>
 
-          <form onSubmit={handleSubmitOrg(handleCreateOrg)} className="space-y-4 text-left border-t border-slate-150 pt-6">
-            <Input
-              label="Organization Name"
-              placeholder="eg. Acme Corp"
-              error={orgErrors.name?.message}
-              {...registerOrg('name')}
-            />
-            <Input
-              label="Logo Image URL (Optional)"
-              placeholder="https://company.com/logo.png"
-              error={orgErrors.logoUrl?.message}
-              {...registerOrg('logoUrl')}
-            />
-            <Button type="submit" className="w-full py-3" isLoading={isCreatingOrg}>
-              Create Workspace
-            </Button>
-          </form>
+            <form onSubmit={handleSubmitOrg(handleCreateOrg)} className="space-y-4 text-left border-t border-[#E9E2DC] pt-6">
+              <Input
+                label="Organization Name"
+                placeholder="eg. Acme Corp"
+                error={orgErrors.name?.message}
+                {...registerOrg('name')}
+              />
+              <Input
+                label="Logo Image URL (Optional)"
+                placeholder="https://company.com/logo.png"
+                error={orgErrors.logoUrl?.message}
+                {...registerOrg('logoUrl')}
+              />
+              <button
+                type="submit"
+                disabled={isCreatingOrg}
+                className="w-full py-3 bg-[#5A3342] hover:bg-[#6A3B4B] text-white font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-sm shadow-[#5A3342]/20"
+              >
+                {isCreatingOrg ? (
+                  <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <Plus size={13} />
+                    <span>Create Workspace</span>
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       ) : (
-        /* Invite members & Workspace lists */
-        <div className="grid md:grid-cols-12 gap-8">
-          {/* Member list & seats */}
-          <div className="md:col-span-7 space-y-6">
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
-              <div className="flex items-center justify-between border-b border-slate-150 pb-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center space-x-1.5">
-                  <Users size={14} className="text-indigo-650" />
-                  <span>Workspace Members</span>
-                </h3>
-                <span className="text-[10px] bg-slate-50 border border-slate-200 text-slate-600 px-2.5 py-0.5 rounded-full font-bold">
-                  {org.seatsUsed} / {org.seatLimit} Seats Used
+        <div className="grid md:grid-cols-12 gap-6">
+          {/* Member List */}
+          <div className="md:col-span-7 space-y-5">
+            <div className="bg-white border border-[#E9E2DC] rounded-2xl p-6 space-y-4 shadow-sm shadow-[#5A3342]/3">
+              <div className="flex items-center justify-between border-b border-[#F0E8E0] pb-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-7 h-7 rounded-lg bg-[#5A3342]/5 flex items-center justify-center">
+                    <Users size={13} className="text-[#5A3342]" />
+                  </div>
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-[#8A7A6A]">Workspace Members</h3>
+                </div>
+                <span className="text-[9px] bg-[#FAF8F6] border border-[#E9E2DC] text-[#8A7A6A] px-3 py-1 rounded-full font-black">
+                  {org.seatsUsed} / {org.seatLimit} seats
                 </span>
               </div>
 
               <div className="space-y-3">
                 {org.members.map((member, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
-                    <div>
-                      <h5 className="text-xs font-bold text-slate-800">{member.email}</h5>
-                      <span className="text-[9px] text-indigo-600 capitalize">{member.role}</span>
+                  <div key={idx} className="flex items-center justify-between p-3.5 bg-[#FAF8F6] border border-[#E9E2DC] rounded-xl hover:border-[#5A3342]/20 transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#5A3342] to-[#7A4A5E] flex items-center justify-center text-white font-black text-xs shrink-0">
+                        {member.email?.charAt(0)?.toUpperCase()}
+                      </div>
+                      <div>
+                        <h5 className="text-xs font-bold text-[#1F1F1F]">{member.email}</h5>
+                        <span className="text-[9px] text-[#C89B5B] font-semibold capitalize">{member.role}</span>
+                      </div>
                     </div>
-                    <span className={`text-[8px] border px-2 py-0.5 rounded-full uppercase font-bold tracking-wider ${
-                      member.status === 'active' 
-                        ? 'bg-green-50 border-green-200 text-green-700' 
+                    <span className={`text-[8px] border px-2.5 py-0.5 rounded-full uppercase font-black tracking-wider ${
+                      member.status === 'active'
+                        ? 'bg-green-50 border-green-200 text-green-700'
                         : 'bg-amber-50 border-amber-200 text-amber-700'
                     }`}>
                       {member.status}
@@ -221,13 +227,15 @@ export default function TeamWorkspacePage() {
             </div>
           </div>
 
-          {/* Invitation Side Form */}
-          <div className="md:col-span-5 space-y-6">
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center space-x-1.5 border-b border-slate-150 pb-3">
-                <Mail size={14} className="text-indigo-650" />
-                <span>Invite Team Member</span>
-              </h3>
+          {/* Invitation Form */}
+          <div className="md:col-span-5 space-y-5">
+            <div className="bg-white border border-[#E9E2DC] rounded-2xl p-6 space-y-4 shadow-sm shadow-[#5A3342]/3">
+              <div className="flex items-center space-x-2 border-b border-[#F0E8E0] pb-4">
+                <div className="w-7 h-7 rounded-lg bg-[#C89B5B]/10 flex items-center justify-center">
+                  <Mail size={13} className="text-[#C89B5B]" />
+                </div>
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-[#8A7A6A]">Invite Member</h3>
+              </div>
 
               <form onSubmit={handleSubmitInvite(handleInvite)} className="space-y-4">
                 <Input
@@ -237,28 +245,41 @@ export default function TeamWorkspacePage() {
                   {...registerInvite('email')}
                 />
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Workspace Role</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-[#8A7A6A]">Workspace Role</label>
                   <select
-                    className="bg-white border border-slate-200 rounded-xl text-xs p-2.5 text-slate-700 focus:outline-none"
+                    className="bg-[#FAF8F6] border border-[#E9E2DC] rounded-xl text-xs p-2.5 text-[#1F1F1F] focus:outline-none focus:border-[#5A3342]/40 transition-colors font-semibold"
                     {...registerInvite('role')}
                   >
                     <option value="member">Member (Own Card Edit Only)</option>
                     <option value="owner">Owner (Full admin controls)</option>
                   </select>
                 </div>
-                <Button type="submit" className="w-full" isLoading={isInviting}>
-                  Send Invitation email
-                </Button>
+                <button
+                  type="submit"
+                  disabled={isInviting}
+                  className="w-full py-2.5 bg-[#5A3342] hover:bg-[#6A3B4B] text-white font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-sm shadow-[#5A3342]/20"
+                >
+                  {isInviting ? (
+                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      <Mail size={13} />
+                      <span>Send Invitation</span>
+                    </>
+                  )}
+                </button>
               </form>
             </div>
 
-            {/* Centralized styling banner */}
-            <div className="p-5 bg-indigo-50 border border-indigo-150 rounded-2xl flex items-center space-x-3 shadow-md shadow-indigo-100/10">
-              <Lock size={20} className="text-indigo-600 shrink-0" />
+            {/* Styling lock info */}
+            <div className="p-5 bg-gradient-to-br from-[#FAF8F6] to-[#FDF4E8] border border-[#C89B5B]/20 rounded-2xl flex items-start space-x-3">
+              <div className="w-9 h-9 bg-[#C89B5B]/10 rounded-xl flex items-center justify-center shrink-0">
+                <Lock size={15} className="text-[#C89B5B]" />
+              </div>
               <div className="space-y-0.5">
-                <h5 className="text-xs font-bold text-indigo-700">Centralized styling theme locks</h5>
-                <p className="text-[9px] text-slate-600 leading-normal">
-                  All invited members will automatically render using the locked team theme configuration set on the Theme Controls tab.
+                <h5 className="text-xs font-black text-[#5A3342]">Centralized theme locks</h5>
+                <p className="text-[9px] text-[#8A7A6A] leading-relaxed">
+                  All invited members automatically render using the locked team theme configuration set in Theme Controls.
                 </p>
               </div>
             </div>
