@@ -25,10 +25,8 @@
   - [x] Configure cream background (#F8F4F1), burgundy (#6B3A4A), and gold (#C89B5B) colors
   - [x] Build circular spring-bounce glass social buttons (LinkedIn, GitHub, Instagram, X, Discord)
   - [x] Configure bottom section centered copyright block
-- [x] Redesign [LivePreview.jsx](file:///Users/admin/identiq/Identiqal-Client/src/components/marketing/LivePreview.jsx) "Live Real-Time Theme Preview" section:
-  - [x] Add 6 detailed themes (Light Clean, Minimalist, Luxury Gold, Midnight, Glass, Gradient)
-  - [x] Create premium selection cards showing color dot palettes and description tags
-  - [x] Apply active card hover/click animations, check markers, and colored left-hand borders
-  - [x] Implement looping 6s float and 450ms scale-down morph transitions on the phone container
-  - [x] Add minimal background gradient blurs and floating circles
+- [x] Redesign [LivePreview.jsx](file:///Users/admin/identiq/Identiqal-Client/src/components/marketing/LivePreview.jsx) "Live Real-Time Theme Preview" section
+- [/] Redesign Dashboard UI:
+  - [ ] Rewrite [layout.js](file:///Users/admin/identiq/Identiqal-Client/src/app/\(dashboard\)/dashboard/layout.js) to support floating sidebar, upgrade plan bottom user profile, and glass sticky topbar breadcrumbs.
+  - [ ] Rewrite [page.js](file:///Users/admin/identiq/Identiqal-Client/src/app/\(dashboard\)/dashboard/page.js) overview panel to render custom gradient welcome cards, animated statistics counters, SVG sparkline graphs, quick actions grid, recent card list, and visual timeline scrollers.
 - [x] Run production build (`npm run build`) compilation check successfully
