@@ -16,4 +16,16 @@ export const authService = {
   refresh: async () => {
     return await axiosInstance.post('/auth/refresh');
   },
+
+  verifyOtp: async (email, otp) => {
+    return await axiosInstance.post('/auth/verify-otp', { email, otp });
+  },
+
+  forgotPassword: async (email) => {
+    return await axiosInstance.post('/auth/forgot-password', { email });
+  },
+
+  resetPassword: async (email, otp, newPassword) => {
+    return await axiosInstance.post('/auth/reset-password', { email, otp, newPassword });
+  },
 };

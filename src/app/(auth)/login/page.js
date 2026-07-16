@@ -36,10 +36,18 @@ export default function LoginPage() {
         setAuth(response.data.token, response.data.user);
         router.push('/dashboard');
       } else {
-        setErrorMsg(response.message || 'Login failed');
+        if (response.requiresVerification) {
+          router.push(`/verify-otp?email=${encodeURIComponent(data.email)}&type=signup`);
+        } else {
+          setErrorMsg(response.message || 'Login failed');
+        }
       }
     } catch (err) {
-      setErrorMsg(err.message || 'Invalid email or password');
+      if (err.response?.data?.requiresVerification) {
+        router.push(`/verify-otp?email=${encodeURIComponent(data.email)}&type=signup`);
+      } else {
+        setErrorMsg(err.message || 'Invalid email or password');
+      }
     } finally {
       setIsLoading(false);
     }

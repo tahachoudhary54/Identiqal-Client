@@ -1,15 +1,15 @@
-import { Navbar } from '@/components/marketing/Navbar.jsx';
-import { Hero } from '@/components/marketing/Hero.jsx';
-import { LogoStrip } from '@/components/marketing/LogoStrip.jsx';
-import { SectionShowcase } from '@/components/marketing/SectionShowcase.jsx';
-import { HowItWorks } from '@/components/marketing/HowItWorks.jsx';
-import { LivePreview } from '@/components/marketing/LivePreview.jsx';
-import { ProblemFraming } from '@/components/marketing/ProblemFraming.jsx';
-import { AIFeatures } from '@/components/marketing/AIFeatures.jsx';
-import { Testimonials } from '@/components/marketing/Testimonials.jsx';
-import { PricingTeaser } from '@/components/marketing/PricingTeaser.jsx';
-import { FinalCTA } from '@/components/marketing/FinalCTA.jsx';
-import { Footer } from '@/components/marketing/Footer.jsx';
+import { Navbar } from '@/components/marketing/Navbar';
+import { Hero } from '@/components/marketing/Hero';
+import { LogoStrip } from '@/components/marketing/LogoStrip';
+import { SectionShowcase } from '@/components/marketing/SectionShowcase';
+import { HowItWorks } from '@/components/marketing/HowItWorks';
+import { LivePreview } from '@/components/marketing/LivePreview';
+import { ProblemFraming } from '@/components/marketing/ProblemFraming';
+import { AIFeatures } from '@/components/marketing/AIFeatures';
+import { Testimonials } from '@/components/marketing/Testimonials';
+import { PricingTeaser } from '@/components/marketing/PricingTeaser';
+import { FinalCTA } from '@/components/marketing/FinalCTA';
+import { Footer } from '@/components/marketing/Footer';
 
 export default function Home() {
   return (

@@ -37,8 +37,8 @@ export default function SignupPage() {
     try {
       const response = await authService.signup(data.name, data.email, data.password);
       if (response.success) {
-        setAuth(response.data.token, response.data.user);
-        router.push('/dashboard');
+        // Redirect to OTP verification page instead of logging in
+        router.push(`/verify-otp?email=${encodeURIComponent(data.email)}&type=signup`);
       } else {
         setErrorMsg(response.message || 'Registration failed');
       }
