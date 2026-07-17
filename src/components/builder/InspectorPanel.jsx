@@ -128,7 +128,10 @@ const ContextualEditor = ({ section }) => {
       {section.type === 'links' && (
         <LinksSettings data={section.data} onUpdate={handleUpdate} />
       )}
-      {['testimonials', 'form', 'gallery'].includes(section.type) && (
+      {section.type === 'gallery' && (
+        <GallerySettings data={section.data} onUpdate={handleUpdate} />
+      )}
+      {['testimonials', 'form'].includes(section.type) && (
         <div className="text-sm text-gray-400 text-center py-12 border border-gray-100 rounded-2xl bg-gray-50/50">
           Settings for {section.type} coming soon.
         </div>
@@ -399,3 +402,66 @@ const LinksSettings = ({ data, onUpdate }) => {
     </SettingGroup>
   );
 };
+
+/* -------------------------------------------------------------------------- */
+/* GALLERY SETTINGS                                                           */
+/* -------------------------------------------------------------------------- */
+
+const GallerySettings = ({ data, onUpdate }) => {
+  const images = data.images || [];
+
+  const updateImage = (index, field, value) => {
+    const newImages = [...images];
+    newImages[index] = { ...newImages[index], [field]: value };
+    onUpdate('images', newImages);
+  };
+
+  const addImage = () => onUpdate('images', [...images, { url: '', caption: '' }]);
+  
+  const removeImage = (index) => {
+    const newImages = images.filter((_, i) => i !== index);
+    onUpdate('images', newImages);
+  };
+
+  return (
+    <SettingGroup title="Gallery Configuration">
+      <RealtimeInput label="Gallery Title" value={data.title || ''} onChange={(val) => onUpdate('title', val)} />
+      
+      <div className="pt-6 mt-4 border-t border-gray-100 dark:border-white/10 space-y-4">
+        <h4 className="text-[11px] font-bold text-gray-500 tracking-wider">IMAGES</h4>
+        
+        <AnimatePresence>
+          {images.map((img, index) => (
+            <motion.div 
+              key={index}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="p-4 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 shadow-sm rounded-2xl space-y-4 relative group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-gray-400 tracking-wider">IMAGE {index + 1}</span>
+                <button 
+                  onClick={() => removeImage(index)}
+                  className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-50 dark:bg-white/10 p-1.5 rounded-lg"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+              <RealtimeInput label="Image URL" value={img.url} onChange={(val) => updateImage(index, 'url', val)} />
+              <RealtimeInput label="Caption (Optional)" value={img.caption || ''} onChange={(val) => updateImage(index, 'caption', val)} />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
+        <button 
+          onClick={addImage}
+          className="w-full py-3 bg-gray-50 dark:bg-white/5 border-2 border-dashed border-gray-200 dark:border-white/20 rounded-2xl text-sm font-semibold text-gray-600 dark:text-gray-300 hover:border-primary/50 hover:text-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-2"
+        >
+          <Plus size={16} /> Add Image
+        </button>
+      </div>
+    </SettingGroup>
+  );
+};
+

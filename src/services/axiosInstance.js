@@ -4,6 +4,11 @@ import { useAuthStore } from '../store/authStore.js';
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
   withCredentials: true, // sends the HTTP-only refresh cookie
+  headers: {
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+    'Expires': '0',
+  },
 });
 
 // Flag to prevent multiple refresh calls simultaneously

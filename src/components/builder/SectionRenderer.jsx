@@ -129,7 +129,14 @@ export const SectionRenderer = ({ section, theme = {}, previewMode = false }) =>
     case 'gallery':
       const images = data.images || [];
       return (
-        <div className="space-y-4 w-full">
+        <div 
+          className="p-6 border border-slate-900 rounded-2xl shadow-sm space-y-4 w-full"
+          style={{ 
+            backgroundColor: colors.background || '#ffffff', 
+            borderColor: colors.secondary || '#6c757d',
+            color: colors.text || '#212529' 
+          }}
+        >
           {data.title && (
             <h4 
               className="text-xs font-bold uppercase tracking-wider text-center"
@@ -144,12 +151,21 @@ export const SectionRenderer = ({ section, theme = {}, previewMode = false }) =>
             <div className="grid grid-cols-2 gap-3">
               {images.map((img, idx) => (
                 <div key={idx} className="space-y-1.5">
-                  <img 
-                    src={img.url} 
-                    alt={img.caption} 
-                    className="w-full aspect-square object-cover rounded-xl border"
-                    style={{ borderColor: colors.secondary || '#6c757d' }}
-                  />
+                  {img.url ? (
+                    <img 
+                      src={img.url} 
+                      alt={img.caption || 'Gallery Image'} 
+                      className="w-full aspect-square object-cover rounded-xl border"
+                      style={{ borderColor: colors.secondary || '#6c757d' }}
+                    />
+                  ) : (
+                    <div 
+                      className="w-full aspect-square bg-gray-100 dark:bg-gray-800 rounded-xl border flex items-center justify-center text-gray-300"
+                      style={{ borderColor: colors.secondary || '#6c757d' }}
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    </div>
+                  )}
                   {img.caption && (
                     <p className="text-[10px] text-center opacity-80" style={{ color: colors.text }}>
                       {img.caption}
